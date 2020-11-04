@@ -39,7 +39,7 @@ const DropdownItem = styled.div`
     padding: 8px 15px;
     align-items: center;
     width: 231px;
-    color: ${colors.NEUE_TYPE_DARK_GREY};
+    color: ${colors.TYPE_DARK_GREY};
     & svg {
         margin-right: 8px;
     }
@@ -54,7 +54,7 @@ const ButtonWrapper = styled.div`
 
 const VersionInfo = styled.div`
     margin-top: 12px;
-    color: ${colors.NEUE_TYPE_LIGHTER_GREY};
+    color: ${colors.TYPE_LIGHTER_GREY};
     font-size: ${variables.NEUE_FONT_SIZE.TINY};
 `;
 
@@ -106,7 +106,7 @@ const Index = () => {
                 key: item.platform,
                 label: (
                     <DropdownItem>
-                        <Icon icon={item.icon} color={colors.NEUE_TYPE_LIGHT_GREY} size={16} />{' '}
+                        <Icon icon={item.icon} color={colors.TYPE_LIGHT_GREY} size={16} />{' '}
                         {item.label}
                     </DropdownItem>
                 ),
@@ -126,7 +126,7 @@ const Index = () => {
             <ButtonWrapper>
                 <StyledDropdown alignMenu="left" offset={0} items={dropdownItems}>
                     <StyledDropdownButton icon={getIconForCurrentPlatform(platform)}>
-                        <Icon icon="ARROW_DOWN" color={colors.NEUE_BG_WHITE} size={15} />
+                        <Icon icon="ARROW_DOWN" color={colors.BG_WHITE} size={15} />
                     </StyledDropdownButton>
                 </StyledDropdown>
                 <StyledDownloadButton>

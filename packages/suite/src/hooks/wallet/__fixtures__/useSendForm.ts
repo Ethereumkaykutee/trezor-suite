@@ -42,7 +42,7 @@ export const XRP_ACCOUNT = {
 };
 
 export const DEFAULT_STORE = {
-    suite: { device: {}, settings: { debug: {} } },
+    suite: { device: {}, settings: { debug: {}, theme: { variant: 'light' } } },
     wallet: {
         accounts: [], // used by auto-labeling
         selectedAccount: BTC_ACCOUNT,

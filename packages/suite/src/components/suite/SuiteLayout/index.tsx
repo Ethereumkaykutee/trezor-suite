@@ -1,7 +1,7 @@
 import React, { useState, createContext } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
-import { colors, variables } from '@trezor/components';
+import { variables, scrollbarStyles } from '@trezor/components';
 import SuiteNotifications from '@suite-components/Notifications';
 import Head from 'next/head';
 import { AppState } from '@suite-types';
@@ -39,11 +39,13 @@ const Columns = styled.div`
 
 const AppWrapper = styled.div`
     display: flex;
-    background: ${colors.BACKGROUND};
+    background: ${props => props.theme.BG_GREY};
     flex-direction: column;
     overflow: auto;
     flex: 1 1 0%;
     align-items: center;
+
+    ${scrollbarStyles}
 `;
 
 const MaxWidthWrapper = styled.div`
