@@ -35,9 +35,7 @@ export const extractCredentialsFromAuthorizationFlow = (url: string) => {
 
         if (typeof e.data !== 'string') return;
 
-        console.warn('e.data', e.data);
         const params = urlSearchParams(e.data);
-        console.log('params', params);
 
         if (originalParams.state && params.state !== originalParams.state) {
             dfd.reject(new Error('state does not match'));
@@ -59,11 +57,8 @@ export const extractCredentialsFromAuthorizationFlow = (url: string) => {
             } else {
                 dfd.reject(new Error('Cancelled'));
             }
-            // todo: revoke to invoke/handle
-            desktopApi.off('oauth/code', onMessageDesktop);
         };
-        // todo: revoke to invoke/handle
-        desktopApi.on('oauth/code', onMessageDesktop);
+        desktopApi.once('oauth/code', onMessageDesktop);
     } else {
         window.addEventListener('message', onMessageWeb);
     }

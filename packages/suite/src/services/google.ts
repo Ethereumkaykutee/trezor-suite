@@ -101,9 +101,8 @@ class Client {
                     : METADATA.GOOGLE_CLIENT_ID_DESKTOP,
         });
 
+        // which token is going to be updated depends on platform
         this.oauth2Client.on('tokens', tokens => {
-            console.warn('tokens handler', tokens);
-
             if (tokens.refresh_token && process.env.SUITE_TYPE === 'desktop') {
                 this.token = tokens.refresh_token;
             }
@@ -112,6 +111,7 @@ class Client {
             }
         });
 
+        // which token is going to be remembered depends on platform
         if (token && process.env.SUITE_TYPE === 'desktop') {
             this.oauth2Client.setCredentials({
                 refresh_token: token,
@@ -125,7 +125,6 @@ class Client {
     }
 
     async authorize() {
-        console.log('authorize');
         const redirectUri = await getOauthReceiverUrl();
         if (!redirectUri) return;
 
@@ -150,16 +149,12 @@ class Client {
                 Object.assign(options, { access_type: 'online', response_type: 'token' });
                 break;
             default:
-            // do nothing. throwing here would be breaking case in case of removing a provider;
+            // no default
         }
 
         const url = this.oauth2Client.generateAuthUrl(options);
-        console.log('url', url);
 
-        // todo: rename
         const { access_token, code } = await extractCredentialsFromAuthorizationFlow(url);
-        console.warn('code', code);
-        console.warn('process.env.SUITE_TYPE', process.env.SUITE_TYPE);
         // implicit flow returns short lived access_token directly
         if (access_token) {
             this.token = access_token;
@@ -192,8 +187,7 @@ class Client {
 
     async getTokenInfo(): Promise<GetTokenInfoResponse> {
         const response = await this.call(
-            // todo:
-            `https://www.googleapis.com/drive/v3/about?fields=user&access_token=${this.token}`,
+            `https://www.googleapis.com/drive/v3/about?fields=user`,
             { method: 'GET' },
             {},
         );
