@@ -4708,6 +4708,10 @@ const definedMessages = defineMessages({
         defaultMessage:
             'Bitcoin Cash will undergo a contentious fork on the 15th of November 2020, which could cause a split in the network. Read our blogpost to understand the risks!',
     },
+    TR_RANGE: {
+        id: 'TR_RANGE',
+        defaultMessage: 'range',
+    },
 } as const);
 
 export default definedMessages;

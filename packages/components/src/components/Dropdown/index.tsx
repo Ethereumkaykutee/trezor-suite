@@ -18,7 +18,7 @@ const Menu = styled.ul<MenuProps>`
     min-width: 140px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
     z-index: 10001;
-    padding: 8px 0px;
+    padding: ${props => props.verticalPadding}px 0px;
 
     ${props =>
         props.coords &&
@@ -124,6 +124,7 @@ interface MenuProps {
     coords?: Coords;
     menuSize?: Coords;
     offset?: number;
+    verticalPadding?: number;
 }
 
 interface Props extends MenuProps, React.ButtonHTMLAttributes<HTMLDivElement> {
@@ -151,6 +152,7 @@ const Dropdown = ({
     alignMenu = 'left',
     offset = 10,
     appendTo,
+    verticalPadding = 8,
     ...rest
 }: Props) => {
     const [toggled, setToggled] = useState(false);

@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { colors, variables } from '@trezor/components';
+import { colors, variables, Dropdown, Timerange, TimerangeProps } from '@trezor/components';
+import { Translation } from '@suite-components';
 import { useGraph } from '@suite-hooks';
 import { GraphRange } from '@wallet-types/graph';
 import { getFormattedLabel } from '@wallet-utils/graphUtils';
+import { startOfToday, endOfToday, subDays, subMonths, subYears, differenceInMonths } from 'date-fns';
 
 const Wrapper = styled.div`
     display: flex;
     /* margin-bottom: 8px; */
 `;
 
-const RangeItem = styled.div<{ selected: boolean }>`
+const RangeItem = styled.div<{ selected: boolean; separated?: boolean }>`
     display: flex;
     font-size: ${variables.FONT_SIZE.SMALL};
     text-align: center;
@@ -23,27 +25,47 @@ const RangeItem = styled.div<{ selected: boolean }>`
     & + & {
         margin-left: 12px;
     }
+
+    ${props =>
+        props.separated &&
+        `
+        border-left: 1px solid ${colors.NEUE_TYPE_LIGHTER_GREY};
+        padding-left: 15px;
+        margin-left: 15px;
+        text-transform: capitalize;
+    `};
 `;
 
+const END_OF_TODAY = endOfToday();
 const RANGES = [
     {
+        label: 'day',
+        startDate: startOfToday(),
+        endDate: END_OF_TODAY,
+        groupBy: 'day',
+    },
+    {
         label: 'week',
-        weeks: 1,
+        startDate: subDays(END_OF_TODAY, 7),
+        endDate: END_OF_TODAY,
         groupBy: 'day',
     },
     {
         label: 'month',
-        weeks: 4,
+        startDate: subMonths(END_OF_TODAY, 1),
+        endDate: END_OF_TODAY,
         groupBy: 'day',
     },
     {
         label: 'year',
-        weeks: 52,
+        startDate: subYears(END_OF_TODAY, 1),
+        endDate: END_OF_TODAY,
         groupBy: 'month',
     },
     {
         label: 'all',
-        weeks: null,
+        startDate: null,
+        endDate: null,
         groupBy: 'month',
     },
 ] as const;
@@ -55,13 +77,37 @@ interface Props {
 
 const RangeSelector = (props: Props) => {
     const { selectedRange, setSelectedRange } = useGraph();
+    const { customTimerangeStart, setCustomTimerangeStart } = useState(null);
+    const { customTimerangeEnd, setCustomTimerangeEnd } = useState(null);
+    const setCustomTimerange = (startDate: Date, endDate: Date) => {
+        setCustomTimerangeStart(startDate);
+        setCustomTimerangeEnd(endDate);
+    };
+
+    useEffect(() => {
+        if (customTimerangeStart && customTimerangeEnd) {
+            const range = {
+                label: 'range',
+                startDate: customTimerangeStart,
+                endDate: customTimerangeEnd,
+                groupBy:
+                    differenceInMonths(customTimerangeStart, customTimerangeEnd) >= 1
+                        ? 'month'
+                        : 'day',
+            };
+            setSelectedRange(range);
+            if (props.onSelectedRange) {
+                props.onSelectedRange(range);
+            }
+        }
+    }, [customTimerangeStart, customTimerangeEnd]);
 
     return (
         <Wrapper className={props.className}>
             {RANGES.map(range => (
                 <RangeItem
                     key={range.label}
-                    selected={range.weeks === selectedRange?.weeks}
+                    selected={range.label === selectedRange.label}
                     onClick={() => {
                         setSelectedRange(range);
                         if (props.onSelectedRange) {
@@ -72,6 +118,34 @@ const RangeSelector = (props: Props) => {
                     {getFormattedLabel(range.label)}
                 </RangeItem>
             ))}
+            <Dropdown
+                verticalPadding={0}
+                alignMenu="right"
+                items={[
+                    {
+                        key: 'group1',
+                        options: [
+                            {
+                                noPadding: true,
+                                noHover: true,
+                                key: 'graphView',
+                                label: (
+                                    <Timerange
+                                        onChange={(startDate, endDate) =>
+                                            setCustomTimerange(startDate, endDate)
+                                        }
+                                    />
+                                ),
+                                callback: () => false,
+                            },
+                        ],
+                    },
+                ]}
+            >
+                <RangeItem selected={selectedRange.label === 'range'} separated>
+                    <Translation id="TR_RANGE" />
+                </RangeItem>
+            </Dropdown>
         </Wrapper>
     );
 };

@@ -331,6 +331,8 @@ export const calcXDomain = (
 
 export const getFormattedLabel = (rangeLabel: GraphRange['label']) => {
     switch (rangeLabel) {
+        case 'range':
+            return 'range';
         case 'all':
             return 'all';
         case 'year':
@@ -339,6 +341,8 @@ export const getFormattedLabel = (rangeLabel: GraphRange['label']) => {
             return '1M';
         case 'week':
             return '1W';
+        case 'day':
+            return '1D';
         // no default
     }
 };
