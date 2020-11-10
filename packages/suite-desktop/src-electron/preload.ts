@@ -8,7 +8,7 @@ const validChannels = [
 
     // bridge
     'bridge/start',
-    
+
     // oauth
     'oauth/code',
 
