@@ -25,6 +25,7 @@ import ConfirmXpub from './confirm/Xpub/Container';
 import ConfirmNoBackup from './confirm/NoBackup';
 import ReviewTransaction from './ReviewTransaction/Container';
 import ImportTransaction from './ImportTransaction';
+import ExportTransaction from './ExportTransaction';
 import ConfirmUnverifiedAddress from './confirm/UnverifiedAddress';
 import AddAccount from './AddAccount/Container';
 import QrScanner from './QrScanner';
@@ -179,6 +180,8 @@ const getUserContextModal = (props: Props) => {
             );
         case 'import-transaction':
             return <ImportTransaction {...payload} onCancel={modalActions.onCancel} />;
+        case 'export-transaction':
+            return <ExportTransaction {...payload} onCancel={modalActions.onCancel} />;
         case 'pin-mismatch':
             return <PinMismatch />;
         case 'disconnect-device':

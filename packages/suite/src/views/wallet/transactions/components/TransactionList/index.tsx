@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import styled, { css } from 'styled-components';
-import { colors, variables, Loader, Card } from '@trezor/components';
+import { colors, variables, Loader, Card, Dropdown } from '@trezor/components';
 import { Translation } from '@suite-components';
 import { Section } from '@dashboard-components';
-import { useSelector } from '@suite-hooks';
+import { useSelector, useActions } from '@suite-hooks';
 import { groupTransactionsByDate } from '@wallet-utils/transactionUtils';
 import { SETTINGS } from '@suite-config';
 import { WalletAccountTransaction, Account } from '@wallet-types';
+import * as modalActions from '@suite-actions/modalActions';
 import TransactionItem from './components/TransactionItem';
 import Pagination from './components/Pagination';
 import TransactionsGroup from './components/TransactionsGroup';
@@ -81,6 +82,14 @@ const TransactionList = ({
         slicedTransactions,
     ]);
 
+    const { openModal } = useActions({
+        openModal: modalActions.openModal,
+    });
+
+    const exportTransactions = useCallback(() => {
+        openModal({ type: 'export-transaction', account });
+    }, [account, openModal]);
+
     // if totalPages is 1 do not render pagination
     // if totalPages is undefined check current page and number of txs (e.g. XRP)
     // Edge case: if there is exactly 25 txs, pagination will be displayed
@@ -92,7 +101,23 @@ const TransactionList = ({
         <StyledSection
             ref={ref}
             heading={<Translation id="TR_ALL_TRANSACTIONS" />}
-            // actions={} // TODO: add Search and Dropdown with export
+            actions={
+                <Dropdown
+                    alignMenu="right"
+                    items={[
+                        {
+                            key: 'transactions',
+                            options: [
+                                {
+                                    key: 'export',
+                                    label: 'Export',
+                                    callback: exportTransactions,
+                                },
+                            ],
+                        },
+                    ]}
+                />
+            }
         >
             {isLoading ? (
                 <LoaderWrapper>

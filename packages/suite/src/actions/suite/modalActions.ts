@@ -64,6 +64,10 @@ export type UserContextPayload =
           decision: Deferred<{ [key: string]: string }[]>;
       }
     | {
+          type: 'export-transaction',
+          account: Account;
+      }
+    | {
           type: 'coinmarket-buy-terms';
           provider?: string;
           decision: Deferred<boolean>;
