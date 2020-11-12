@@ -5,7 +5,7 @@ export const stubOpen = (win: Window) => {
     // @ts-ignore
     win.Math.random = () => 0.4; // to make tests deterministic, this value ensures state YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
     // @ts-ignore
-    return () => win.postMessage('?code=chicken-cho-cha&state=YYYYYYYYYY');
+    return () => win.postMessage({ search: '?code=chicken-cho-cha&state=YYYYYYYYYY' });
 };
 
 export const rerouteMetadataToMockProvider = (

@@ -4,7 +4,7 @@
         <script>
             // google implicit flow - hash
             // dropbox authorization code flow - search
-            var message = window.location.hash || window.location.search;
+            var message = { hash: window.location.hash, search: window.location.search };
 
             if (window.opener) {
                 window.opener.postMessage(message, window.location.origin);

@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import { getPrefixedURL } from '@suite-utils/router';
 import { METADATA } from '@suite-actions/constants';
 import { Deferred, createDeferred } from '@suite-utils/deferred';
@@ -13,36 +15,40 @@ export const getOauthReceiverUrl = () => {
 
     return window.desktopApi!.getHttpReceiverAddress('/oauth');
 };
-
+type Credentials =
+    | { access_token?: undefined; code: string }
+    | { access_token: string; code?: undefined };
 /**
  * Handle extraction of authorization code from Oauth2 protocol
  */
 export const extractCredentialsFromAuthorizationFlow = (url: string) => {
     const originalParams = urlHashParams(url);
 
-    // eslint-disable-next-line camelcase
-    const dfd: Deferred<{ code?: string; access_token?: string }> = createDeferred();
+    const dfd: Deferred<Credentials> = createDeferred();
 
     const onMessageWeb = (e: MessageEvent) => {
-        // filter non oauth messages
-        if (
-            !['wallet.trezor.io', 'beta-wallet.trezor.io', window.location.origin].includes(
-                e.origin,
-            )
-        ) {
+        // oauth message is post-messaged from oauth_receiver.html that is hosted on the same origin
+        if (window.location.origin !== e.origin) {
             return;
         }
 
-        if (typeof e.data !== 'string') return;
+        if (!e.data.search && !e.data.hash) return;
 
-        const params = urlSearchParams(e.data);
+        let message;
+        if (e.data.search) {
+            message = urlSearchParams(e.data.search);
+        } else {
+            message = urlHashParams(e.data.hash);
+        }
 
-        if (originalParams.state && params.state !== originalParams.state) {
+        const { code, access_token, state } = message;
+
+        if (originalParams.state && state !== originalParams.state) {
             dfd.reject(new Error('state does not match'));
         }
 
-        if (params.code || params.access_token) {
-            dfd.resolve(params);
+        if (code || access_token) {
+            dfd.resolve(({ code, access_token } as unknown) as Credentials);
         } else {
             dfd.reject(new Error('Cancelled'));
         }

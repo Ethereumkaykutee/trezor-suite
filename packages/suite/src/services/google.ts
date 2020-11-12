@@ -12,6 +12,7 @@ import { OAuth2Client, CodeChallengeMethod } from 'google-auth-library';
 import { METADATA } from '@suite-actions/constants';
 import { extractCredentialsFromAuthorizationFlow, getOauthReceiverUrl } from '@suite-utils/oauth';
 import { getCodeChallenge } from '@suite-utils/random';
+import { isWeb, isDesktop } from '@suite-utils/env';
 
 const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 const BOUNDARY = '-------314159265358979323846';
@@ -95,29 +96,26 @@ class Client {
         this.token = token;
         this.nameIdMap = {};
         this.oauth2Client = new OAuth2Client({
-            clientId:
-                process.env.SUITE_TYPE === 'web'
-                    ? METADATA.GOOGLE_CLIENT_ID_WEB
-                    : METADATA.GOOGLE_CLIENT_ID_DESKTOP,
+            clientId: isWeb() ? METADATA.GOOGLE_CLIENT_ID_WEB : METADATA.GOOGLE_CLIENT_ID_DESKTOP,
         });
 
         // which token is going to be updated depends on platform
         this.oauth2Client.on('tokens', tokens => {
-            if (tokens.refresh_token && process.env.SUITE_TYPE === 'desktop') {
+            if (tokens.refresh_token && isDesktop()) {
                 this.token = tokens.refresh_token;
             }
-            if (tokens.access_token && process.env.SUITE_TYPE === 'web') {
+            if (tokens.access_token && isWeb()) {
                 this.token = tokens.access_token;
             }
         });
 
         // which token is going to be remembered depends on platform
-        if (token && process.env.SUITE_TYPE === 'desktop') {
+        if (token && isDesktop()) {
             this.oauth2Client.setCredentials({
                 refresh_token: token,
             });
         }
-        if (token && process.env.SUITE_TYPE === 'web') {
+        if (token && isWeb()) {
             this.oauth2Client.setCredentials({
                 access_token: token,
             });
