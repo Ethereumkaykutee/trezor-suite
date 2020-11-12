@@ -1,17 +1,15 @@
 import React from 'react';
 import { Button, colors } from '@trezor/components';
 import { Translation } from '@suite-components';
+import * as routerActions from '@suite-actions/routerActions';
+import { useActions } from '@suite-hooks';
 
 import Wrapper from './components/Wrapper';
-import { Props as BaseProps } from './index';
 
-interface Props {
-    transport: BaseProps['suite']['transport'];
-    goto: BaseProps['goto'];
-}
-
-const UpdateBridge = ({ transport, goto }: Props) => {
-    if (!transport || !transport.outdated) return null;
+const UpdateBridge = () => {
+    const { goto } = useActions({
+        goto: routerActions.goto,
+    });
     return (
         <Wrapper variant="info">
             <Translation id="TR_NEW_TREZOR_BRIDGE_IS_AVAILABLE" />
