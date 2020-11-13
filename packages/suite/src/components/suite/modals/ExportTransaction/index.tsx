@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { saveAs } from 'file-saver';
-import TrezorConnect, { AccountInfo } from 'trezor-connect';
+import TrezorConnect from 'trezor-connect';
 import { Button, Modal, Select } from '@trezor/components';
 import { Translation } from '@suite-components';
 import { Account } from '@wallet-reducers/accountsReducer';
 import { range } from '@suite-utils/array';
+// @ts-ignore - Not sure why it can't find the worker but the path is correct?!
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import ExportWorker from 'worker-loader?filename=static/[hash].worker.js!../../../../workers/export.worker';
 
@@ -22,10 +23,11 @@ type ExportStatus = {
     error?: string;
 };
 
+// TODO: Translations
 const exportTypes = [
-    { value: 'csv', label: 'Export as CSV', },
-    { value: 'pdf', label: 'Export as PDF', },
-    { value: 'json', label: 'Export as JSON', },
+    { value: 'csv', label: 'Export as CSV' },
+    { value: 'pdf', label: 'Export as PDF' },
+    { value: 'json', label: 'Export as JSON' },
 ];
 
 const ExportTransaction = ({ account, onCancel }: Props) => {
@@ -89,7 +91,7 @@ const ExportTransaction = ({ account, onCancel }: Props) => {
             });
         }
 
-        // Generate CSV or PDF
+        // TODO: Translations
         const fields = {
             datetime: 'Date & Time',
             type: 'Type',

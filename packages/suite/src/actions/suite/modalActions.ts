@@ -64,7 +64,7 @@ export type UserContextPayload =
           decision: Deferred<{ [key: string]: string }[]>;
       }
     | {
-          type: 'export-transaction',
+          type: 'export-transaction';
           account: Account;
       }
     | {
