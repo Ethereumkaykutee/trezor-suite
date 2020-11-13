@@ -35,7 +35,7 @@ const Button = styled.div`
     margin-right: 10px;
     cursor: pointer;
     border-radius: 4px;
-    background-color: ${props => props.theme.BG_GRAY};
+    background-color: ${props => props.theme.BG_GREY};
     color: ${props => props.theme.TYPE_DARK_GREY};
     font-size: ${variables.FONT_SIZE.TINY};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};

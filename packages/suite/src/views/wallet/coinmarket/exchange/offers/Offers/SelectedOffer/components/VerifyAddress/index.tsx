@@ -115,7 +115,7 @@ const Confirmed = styled.div`
     height: 60px;
     font-size: ${variables.FONT_SIZE.BIG};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
-    background: ${props => props.theme.BG_GRAY};
+    background: ${props => props.theme.BG_GREY};
     align-items: center;
     justify-content: center;
 `;

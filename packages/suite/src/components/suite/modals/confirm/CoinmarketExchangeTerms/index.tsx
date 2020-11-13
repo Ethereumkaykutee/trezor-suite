@@ -48,7 +48,7 @@ const Footer = styled.div`
     display: flex;
     padding: 35px 0;
     flex: 1;
-    border-top: 1px solid ${props => props.theme.NEUE_STROKE_GREY};
+    border-top: 1px solid ${props => props.theme.STROKE_GREY};
 `;
 
 const FooterContent = styled.div`
