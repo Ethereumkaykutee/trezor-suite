@@ -7,6 +7,7 @@ import { useSelector, useActions } from '@suite-hooks';
 import { groupTransactionsByDate } from '@wallet-utils/transactionUtils';
 import { SETTINGS } from '@suite-config';
 import { WalletAccountTransaction, Account } from '@wallet-types';
+import { isEnabled } from '@suite-utils/features';
 import * as modalActions from '@suite-actions/modalActions';
 import TransactionItem from './components/TransactionItem';
 import Pagination from './components/Pagination';
@@ -102,21 +103,23 @@ const TransactionList = ({
             ref={ref}
             heading={<Translation id="TR_ALL_TRANSACTIONS" />}
             actions={
-                <Dropdown
-                    alignMenu="right"
-                    items={[
-                        {
-                            key: 'transactions',
-                            options: [
-                                {
-                                    key: 'export',
-                                    label: 'Export',
-                                    callback: exportTransactions,
-                                },
-                            ],
-                        },
-                    ]}
-                />
+                isEnabled('EXPORT_TRANSACTIONS') ? (
+                    <Dropdown
+                        alignMenu="right"
+                        items={[
+                            {
+                                key: 'transactions',
+                                options: [
+                                    {
+                                        key: 'export',
+                                        label: 'Export',
+                                        callback: exportTransactions,
+                                    },
+                                ],
+                            },
+                        ]}
+                    />
+                ) : undefined
             }
         >
             {isLoading ? (
