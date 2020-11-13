@@ -37,7 +37,7 @@ const Step = styled.div<ActiveProps>`
     font-weight: ${props =>
         props.active ? variables.FONT_WEIGHT.DEMI_BOLD : variables.FONT_WEIGHT.REGULAR};
     color: ${props =>
-        props.active ? props => props.theme.TYPE_GREEN : props.theme.TYPE_LIGHT_GREY};
+        props.active ? props => props.theme.TYPE_GREEN : props.theme.TYPE_DARK_GREY};
     display: flex;
     font-size: ${variables.FONT_SIZE.SMALL};
     flex: 1;
