@@ -47,14 +47,16 @@ const ThemeProvider: React.FC = ({ children }) => {
             }
         };
 
-        if (storedTheme === undefined) {
+        if (!storedTheme) {
             loadStoredTheme();
         }
 
         // set active theme OS based theme only if there are no saved settings
+        console.log('storedTheme', storedTheme);
         if (storedTheme === null) {
             const osTheme = getOSTheme();
             if (osTheme !== theme.variant) {
+                console.log('setting default');
                 setTheme(osTheme);
             }
         }
