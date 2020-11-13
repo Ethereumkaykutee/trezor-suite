@@ -1,13 +1,20 @@
 import React, { useCallback, useState } from 'react';
+import { saveAs } from 'file-saver';
 import TrezorConnect, { AccountInfo } from 'trezor-connect';
-import { Button, Modal } from '@trezor/components';
+import { Button, Modal, Select } from '@trezor/components';
 import { Translation } from '@suite-components';
 import { Account } from '@wallet-reducers/accountsReducer';
 import { range } from '@suite-utils/array';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import ExportWorker from 'worker-loader?filename=static/[hash].worker.js!../../../../workers/export.worker';
 
 type Props = {
     account: Account;
     onCancel: () => void;
+};
+
+type ExportParams = {
+    type: 'csv' | 'pdf' | 'json';
 };
 
 type ExportStatus = {
@@ -15,7 +22,16 @@ type ExportStatus = {
     error?: string;
 };
 
+const exportTypes = [
+    { value: 'csv', label: 'Export as CSV', },
+    { value: 'pdf', label: 'Export as PDF', },
+    { value: 'json', label: 'Export as JSON', },
+];
+
 const ExportTransaction = ({ account, onCancel }: Props) => {
+    const [params, setParams] = useState<ExportParams>({
+        type: 'csv',
+    });
     const [status, setStatus] = useState<ExportStatus>({
         isRunning: false,
     });
@@ -24,8 +40,6 @@ const ExportTransaction = ({ account, onCancel }: Props) => {
         // Stop export if in progress
         onCancel();
     }, [onCancel]);
-
-    console.log(account);
 
     const { symbol, descriptor } = account;
     const { isRunning, error } = status;
@@ -57,6 +71,7 @@ const ExportTransaction = ({ account, onCancel }: Props) => {
         const { history, page } = result.payload;
         const transactions = history.transactions ?? [];
         if (page && page.total > 1) {
+            // TODO: Make this sequential (for tracking progress and cancellation)
             const pages = range(2, page.total);
             const promises = pages.map(p =>
                 TrezorConnect.getAccountInfo({
@@ -75,15 +90,58 @@ const ExportTransaction = ({ account, onCancel }: Props) => {
         }
 
         // Generate CSV or PDF
-        console.log(transactions);
+        const fields = {
+            datetime: 'Date & Time',
+            type: 'Type',
+            txid: 'Transaction ID',
+            amount: 'Amount',
+            fee: 'Fee',
+        };
+        const content = transactions.map(t => ({
+            ...t,
+            datetime: t.blockTime, // TODO: Format
+        }));
 
-        setStatus({
-            isRunning: false,
+        const worker = new ExportWorker();
+        worker.postMessage({
+            coin: symbol,
+            type: params.type,
+            fields,
+            content,
         });
-    }, [descriptor, symbol, isRunning, setStatus]);
+
+        const handleMessage = (event: MessageEvent) => {
+            saveAs(event.data, `suite-export-${+new Date()}.${params.type}`);
+
+            setStatus({
+                isRunning: false,
+            });
+        };
+
+        worker.addEventListener('message', handleMessage);
+        return () => {
+            worker.removeEventListener('message', handleMessage);
+        };
+    }, [isRunning, descriptor, symbol, params.type]);
+
+    const onTypeChange = useCallback(
+        options => {
+            setParams({
+                ...params,
+                type: options.value,
+            });
+        },
+        [params, setParams],
+    );
 
     return (
         <Modal cancelable onCancel={onClose} heading={<Translation id="TR_EXPORT_TRANSACTIONS" />}>
+            <Select
+                isSearchable={false}
+                value={exportTypes.find(t => t.value === params.type)}
+                options={exportTypes}
+                onChange={onTypeChange}
+            />
             <Button onClick={runExport} isDisabled={isRunning}>
                 Export
             </Button>
